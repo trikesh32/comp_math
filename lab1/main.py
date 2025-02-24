@@ -128,6 +128,8 @@ def library_solve(matrix):
     if det_A != 0:
         solution = np.linalg.solve(A, B)
         print(solution)
+        print("Вектор неувязки:")
+        print(np.dot(A, solution) - B)
     else:
         print("Решений нет, либо бесконечно много")
 
