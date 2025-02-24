@@ -53,6 +53,7 @@ def find_line_with_max_element(matrix, i):
         if abs(matrix[j][i]) > maximum:
             maximum = matrix[j][i]
             res = j
+    print("Максимальный элемент: ", maximum)
     if maximum == 0:
         return -1
     return res
@@ -68,13 +69,13 @@ def kill_elements_under(matrix, i):
 
 def make_triangle_matrix(matrix):
     k = 0
-    for i in range(len(matrix)):
+    for i in range(len(matrix) - 1):
         print(f"Итерация: {i+1}")
         maximum_index = find_line_with_max_element(matrix, i)
-        print(f"Номер строки с наибольшим модулем: {maximum_index+1} ")
         if maximum_index == -1:
-            print("Наибольший модуль 0, едем дальше")
-            continue
+            print("Наибольший модуль 0 => на главной диагонали 0 => определитель 0 => нет решений")
+            return -1
+        print(f"Номер строки с наибольшим модулем: ", maximum_index)
         if maximum_index != i:
             matrix = change_lines(matrix, maximum_index, i)
             print("Меняем местами строки")
@@ -83,6 +84,7 @@ def make_triangle_matrix(matrix):
         print("Вычтем строки: ")
         matrix = kill_elements_under(matrix, i)
         print_matrix(matrix)
+    print("Количество перестановок: ", k)
     return k
 
 
@@ -155,6 +157,8 @@ def main():
                 continue
             original_matrix = [row[:] for row in matrix]
             k = make_triangle_matrix(matrix)
+            if k == -1:
+                continue
             determinant = count_determinant(matrix, k)
             print(f"Определитель: {determinant}")
             if determinant == 0:
