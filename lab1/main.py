@@ -90,7 +90,7 @@ def count_determinant(matrix, k):
     res = 1
     for i in range(len(matrix)):
         res *= matrix[i][i]
-    return -1 ** k * res
+    return ((-1) ** k) * res
 
 
 def find_roots(matrix):
@@ -113,6 +113,25 @@ def find_problem_vector(matrix, x):
     return result
 
 
+def library_solve(matrix):
+    A = []
+    B = []
+    for i in range(len(matrix)):
+        B.append(matrix[i][-1])
+        A.append([])
+        for j in range(len(matrix)):
+            A[i].append(matrix[i][j])
+    A = np.array(A)
+    B = np.array(B)
+    det_A = np.linalg.det(A)
+    print("Определитель: ", det_A)
+    if det_A != 0:
+        solution = np.linalg.solve(A, B)
+        print(solution)
+    else:
+        print("Решений нет, либо бесконечно много")
+
+
 def main():
     while True:
         print("0. Для выхода с программы")
@@ -132,7 +151,7 @@ def main():
             else:
                 print("Понятия не имею что это значит...")
                 continue
-            original_matrix = matrix.copy()
+            original_matrix = [row[:] for row in matrix]
             k = make_triangle_matrix(matrix)
             determinant = count_determinant(matrix, k)
             print(f"Определитель: {determinant}")
@@ -144,6 +163,9 @@ def main():
             print_matrix([x])
             print("Вектор неувязки:")
             print("\t".join(map(str, find_problem_vector(original_matrix, x))))
+            print("----------------")
+            print("Найдем решение с помощью библиотеки Numpy")
+            library_solve(original_matrix)
 
         except TooBigDimensionException:
             print("Слишком большая размерность")
