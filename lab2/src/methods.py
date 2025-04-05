@@ -123,17 +123,19 @@ def secant_method(equation: Equation):
         file = __stdout__
     else:
         file = open(file, "w+")
-    x_prev_prev = a
-    x_prev = b
-    counter = 0
+    x_prev_prev = a if equation.function(a) * equation.double_derivative(a) > 0 else b
+    x_prev = x_prev_prev + epsilon if x_prev_prev == a else x_prev_prev - epsilon
+    print(f"x0 = {x_prev_prev}, x1 = {x_prev}")
+    counter = 1
     while True:
         counter += 1
         x = x_prev - (x_prev - x_prev_prev)*equation.function(x_prev)/(equation.function(x_prev) - equation.function(x_prev_prev))
         print(f"Номер итерации {counter}", file=file)
-        print(f"Значение x_{counter} = {x}", file=file)
-        print(f"Значение функции в точке x_{counter}: {equation.function(x)}", file=file)
+        print(f"Значение x{counter} = {x}", file=file)
+        print(f"Значение функции в точке x{counter}: {equation.function(x)}", file=file)
         print(f"Погрешность: {abs(x - x_prev)}", file=file)
-        if (abs(x - x_prev) < epsilon):
+        # if (abs(x - x_prev) < epsilon):
+        if (abs(equation.function(x)) < epsilon) and (abs(x - x_prev) < epsilon):
             break
         x_prev_prev = x_prev
         x_prev = x
@@ -193,24 +195,27 @@ def simple_iteration_method(equation: Equation):
     l = equation.find_lambda(a, b)
     phi = lambda x: x + l * equation.function(x)
     phi_derivative = lambda x: 1 + l * equation.derivative(x)
+    print(f"Найденная lambda = {l}", file=file)
+    print(phi_derivative(a), phi_derivative(b), file=file)
     for x in np.arange(a, b, 0.001):
         if abs(phi_derivative(x)) >= 1:
             print("Функция не сходится на данном отрезке", file=file)
-            return None
+            print("Но мы все равно попытаемся", file=file)
+            print(phi_derivative(a), phi_derivative(b), phi_derivative(x), file=file)
     if equation.double_derivative(a) * equation.function(a) > 0:
         x_prev = a
     else:
         x_prev = b
     print(f"Начальное приближение x0 = {x_prev}", file=file)
     counter = 0
-    while True:
+    while True and counter < 50:
         counter += 1
         x = phi(x_prev)
         print(f"Номер итерации {counter}", file=file)
         print(f"Значение x_{counter} = {x}", file=file)
         print(f"Значение функции в точке x_{counter}: {equation.function(x)}", file=file)
         print(f"Погрешность: {abs(x - x_prev)}", file=file)
-        if (abs(x - x_prev) < epsilon):
+        if (abs(x - x_prev) < epsilon) and (abs(equation.function(x)) < epsilon):
             break
         x_prev = x
 

@@ -34,12 +34,15 @@ class Equation:
     def find_lambda(self, left: float, right: float):
         x_values = np.arange(left, right, 0.001)
         maximum = 0
+        random_x = 0
         for x in x_values:
             if abs(self.derivative(x)) > maximum:
                 maximum = abs(self.derivative(x))
-        if self.derivative(left) > 0:
-            return - 1/ maximum
-        return 1/ maximum
+            if random_x == 0:
+                random_x = x
+        if self.derivative(x) > 0:
+            return - 1 / maximum
+        return 1 / maximum
 
 
 

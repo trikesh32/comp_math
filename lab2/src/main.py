@@ -9,7 +9,7 @@ systems = {
 }
 equations = {
     1: Equation("x^3 + 4.81x^2 - 17.37x + 5.38", lambda x: x ** 3 + 4.81 * x ** 2 - 17.37 * x + 5.38,
-                lambda x: 3 * x ** 2 + 9.62 * x - 17.37, lambda x, y: 6 * x + 9.62),
+                lambda x: 3 * x ** 2 + 9.62 * x - 17.37, lambda x: 6 * x + 9.62),
     2: Equation("4.45x^3 + 7.81x^2 - 9.62x - 8.17", lambda x: 4.45 * x ** 3 + 7.81 * x ** 2 - 9.62 * x - 8.17,
                 lambda x: 4.45 * 3 * x ** 2 + 7.81 * 2 * x - 9.62, lambda x: 4.45 * 6 * x + 7.81 * 2),
     3: Equation("sin(x) - x + 1", lambda x: sin(x) - x + 1,
