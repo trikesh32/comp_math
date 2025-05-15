@@ -174,7 +174,7 @@ functions = [
 def run(X, Y, file):
     lowest_x, highest_x = min(X), max(X)
     lowest_sigma = math.inf
-    best_func = ""
+    best_func = []
     plt.scatter(X, Y, label="Вводные точки")
     for get_coeffs, get_function, name, sample in functions:
         try:
@@ -205,7 +205,10 @@ def run(X, Y, file):
             print_r_result(R)
             if lowest_sigma > sigma:
                 lowest_sigma = sigma
-                best_func = name
+                best_func = []
+                best_func.append(name)
+            elif lowest_sigma == sigma:
+                best_func.append(name)
             print(f"Среднеквадратичное отклонение: {sigma:.3f}", file=file)
             x = np.linspace(lowest_x, highest_x, 400)
             y = np.ravel(func(x))
@@ -213,7 +216,7 @@ def run(X, Y, file):
             print("-" * 30, file=file)
         except Exception as e:
             print(f"Ошибка приближения \"{name}\": {e}\n", file=file)
-    print(f"Лучшая функция: {best_func}", file=file)
+    print(f"Лучшии функция: {best_func}", file=file)
     print(f"Ее среднеквадратичное отклонение: {lowest_sigma}", file=file)
 
     plt.legend()
