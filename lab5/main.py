@@ -12,7 +12,7 @@ generative_functions = [
 ]
 
 
-def generate_points():
+def generate_points(searched_x):
     while True:
         print("Выберите функцию")
         for i, _ in enumerate(generative_functions):
@@ -28,6 +28,7 @@ def generate_points():
             print("Верхняя граница должна быть больше нижней")
             continue
         n = int(input("Введите количество точек: "))
+        print(f"f(x)={actual_func(searched_x)}")
         h = (b - a) / (n - 1)
         x, y = [], []
         for i in range(n):
@@ -102,6 +103,7 @@ def stirling_mnogochlen(xs, ys, differences):
         zero = len(xs) // 2
         h = xs[1] - xs[0]
         t = (x - xs[zero]) / h
+        print(f"t для стирлинга: {t}")
         res = ys[zero]
         for i in range(1, zero + 1):
             loc_prod = t
@@ -172,9 +174,29 @@ def run(x, y, searched_x, output_file):
         draw_plot(x, y, searched_x, func_newton_finite, "Ньютон (кон)")
 
         if len(x) % 2 != 0:
-            stirling_func = stirling_mnogochlen(x, y, deltas)
-            print(f"Интерполяция Стирлинга: {stirling_func(searched_x)}")
-            draw_plot(x, y, searched_x, stirling_func, "Стирлинг")
+            h = (x[1] - x[0])
+            if abs((searched_x - x[len(x)//2]) / h) < 0.25:
+                stirling_func = stirling_mnogochlen(x, y, deltas)
+                print(f"Интерполяция Стирлинга: {stirling_func(searched_x)}")
+                draw_plot(x, y, searched_x, stirling_func, "Стирлинг")
+            else:
+                new_x = x[-1] + h
+                new_y = func_lagrange(new_x)
+                print(f"ДОБАВИЛИ ТОЧКУ: ({new_x}; {new_y})")
+                x.append(new_x)
+                y.append(new_y)
+                new_deltas = [y]
+                n = len(x)
+
+                for i in range(1, n):
+                    new_deltas.append([])
+                    for j in range(n - i):
+                        new_deltas[i].append(new_deltas[i - 1][j + 1] - new_deltas[i - 1][j])
+                bessel_func = bessel_mnogochlen(x, y, new_deltas)
+                print(f"Интерполяция Бесселя: {bessel_func(searched_x)}")
+                print_deltas(new_deltas, output_file)
+                draw_plot(x, y, searched_x, bessel_func, "Бессель")
+
         else:
             bessel_func = bessel_mnogochlen(x, y, deltas)
             print(f"Интерполяция Бесселя: {bessel_func(searched_x)}")
@@ -201,6 +223,7 @@ def main():
         try:
             X = []
             Y = []
+            searched_x = float(input("Введите x для которого будем искать значения: "))
             print("Как будем находить чиселки?")
             print("1. С помощью ввода точек")
             print("2. Сгенерируем с помощью функции")
@@ -226,11 +249,11 @@ def main():
                     X.append(float(numbers[0]))
                     Y.append(float(numbers[1]))
             elif inp == 2:
-                X, Y = generate_points()
+                X, Y = generate_points(searched_x)
             else:
                 print("Нет такого варианта")
                 continue
-            searched_x = float(input("Введите x для которого будем искать значения: "))
+
             out_filename = input("Введите файл для вывода (ENTER для вывода в консоль): ")
             if out_filename == "":
                 out = stdout
