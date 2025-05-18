@@ -69,7 +69,6 @@ def draw_plot(xs, ys, func, name, func_name):
     plt.scatter(xs, ys, color='b')
     plt.title(name)
     plt.grid(True)
-    plt.legend()
     plt.show()
 
 
