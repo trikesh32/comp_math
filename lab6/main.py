@@ -73,8 +73,8 @@ def draw_plot(xs, ys, func, name, func_name):
 
 
 methods = [
-    ["Метод Эйлера", euler_method, 1, 2],
-    ["Модифицированный метод Эйлера", modified_euler_method, 2, 2],
+    # ["Метод Эйлера", euler_method, 1, 2],
+    # ["Модифицированный метод Эйлера", modified_euler_method, 2, 2],
     ["Метод Милна", milner_method, None, 5]
 ]
 
@@ -101,10 +101,23 @@ def run(uravn, x0, xn, y0, normal_h, eps):
                 xs_h05, ys_h05 = method_func(func, x0, xn, y0, h / 2)
                 inaccuracy = abs(ys_h[-1] - ys_h05[-1]) / (2 ** method_accuracy - 1)
                 if inaccuracy < eps:
+                    n = len(xs_h05)
                     print("Достаточная точность получилась при шаге: ", h / 2)
+                    print("Число точек: ", n)
                     print("Погрешность: ", inaccuracy)
-                    print(tabulate(list(zip(xs_h05, ys_h05, [original_func(xs_h05[i], xs_h05[0], ys_h05[0]) for i in
-                                                             range(len(xs_h05))])), headers=["x", "y", "y_true"]))
+
+                    orig = [original_func(xs_h05[i], xs_h05[0], ys_h05[0]) for i in range(n)]
+                    normal_n = (xn - x0) / (normal_h) + 1
+                    delta = round((n - 1) / (normal_n - 1))
+                    output_x = []
+                    output_y = []
+                    output_orig = []
+                    for i in range(round(normal_n)):
+                        output_x.append(xs_h05[i * delta])
+                        output_y.append(ys_h05[i * delta])
+                        output_orig.append(orig[i * delta])
+                    print(tabulate(
+                        list(zip(output_x, output_y, output_orig)), headers=["x", "y", "y_true"]))
                     draw_plot(xs_h05, ys_h05, original_func, method_name, func_name)
                     break
                 h /= 2
@@ -112,21 +125,39 @@ def run(uravn, x0, xn, y0, normal_h, eps):
                     print("Я отказываюсь дальше решать этот ужас")
                     break
         else:
+            previous_last_elements = []
             while True:
                 xs_h, ys_h = method_func(func, x0, xn, y0, h)
-                inaccuracy = max([abs(original_func(xs_h[i], xs_h[0], ys_h[0]) - ys_h[i]) for i in range(len(xs_h))])
-                if inaccuracy < eps:
+                inaccuracy = max([abs(original_func(xs_h[i], x0, y0) - ys_h[i]) for i in range(len(xs_h))])
+                previous_last_elements.append(ys_h[-1])
+
+                if inaccuracy <= eps:
+                    n = len(xs_h)
                     print("Достаточная точность получилась при шаге: ", h)
+                    print("Число точек: ", n)
                     print("Погрешность: ", inaccuracy)
+
+                    orig = [original_func(xs_h[i], xs_h[0], ys_h[0]) for i in range(n)]
+                    normal_n = (xn - x0) / normal_h + 1
+                    delta = round((n - 1) / (normal_n - 1))
+                    output_x = []
+                    output_y = []
+                    output_orig = []
+                    output_eps = []
+                    for i in range(round(normal_n)):
+                        output_x.append(xs_h[i * delta])
+                        output_y.append(ys_h[i * delta])
+                        output_orig.append(orig[i * delta])
+                        output_eps.append(abs(output_orig[-1] - output_y[-1]))
                     print(tabulate(
-                        list(zip(xs_h, ys_h, [original_func(xs_h[i], xs_h[0], ys_h[0]) for i in range(len(xs_h))])),
-                        headers=["x", "y", "y_true"]))
+                        list(zip(output_x, output_y, output_orig, output_eps)), headers=["x", "y", "y_true", "|eps|"]))
                     draw_plot(xs_h, ys_h, original_func, method_name, func_name)
                     break
                 h /= 2
                 if h < 1e-6:
                     print("Я отказываюсь дальше решать этот ужас")
                     break
+        print(previous_last_elements)
         print("---------------------------------------------------------------------")
 
 
